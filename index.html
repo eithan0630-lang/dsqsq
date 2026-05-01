@@ -936,7 +936,7 @@ function initFirebase() {
   const db = window._db;
   const { collection, onSnapshot, query, orderBy } = window._fs;
 
-  const q = query(collection(db, 'planning'), orderBy('date'), orderBy('heure'));
+  const q = query(collection(db, 'planning'));
   unsubscribe = onSnapshot(q, snap => {
     slots = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     setDbStatus(true);
