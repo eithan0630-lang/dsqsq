@@ -11,39 +11,18 @@
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getFirestore, collection, doc, setDoc, getDocs, deleteDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-  // ══════════════════════════════════════════════════════
-  //  🔥 REMPLACE CES VALEURS PAR CELLES DE TON PROJET FIREBASE
-  // ══════════════════════════════════════════════════════
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyAXFHHYcuqN8gIhLUv1BpeK-tu32DYB1e0",
-  authDomain: "jjk-15c06.firebaseapp.com",
-  projectId: "jjk-15c06",
-  storageBucket: "jjk-15c06.firebasestorage.app",
-  messagingSenderId: "410191304707",
-  appId: "1:410191304707:web:542bc9ba5e7378962b5636",
-  measurementId: "G-MC0E3JSKPZ"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+  const firebaseConfig = {
+    apiKey: "AIzaSyAXFHHYcuqN8gIhLUv1BpeK-tu32DYB1e0",
+    authDomain: "jjk-15c06.firebaseapp.com",
+    projectId: "jjk-15c06",
+    storageBucket: "jjk-15c06.firebasestorage.app",
+    messagingSenderId: "410191304707",
+    appId: "1:410191304707:web:542bc9ba5e7378962b5636",
+    measurementId: "G-MC0E3JSKPZ"
   };
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
-
-  // ── Structure Firestore ──
-  // Collection: "planning"
-  // Document ID: "YYYY-MM-DD_HHMM_groupeId_userId"
-  // Fields: { date, heure, groupe, userId, userName, role, note, createdAt }
 
   window._db = db;
   window._fs = { collection, doc, setDoc, getDocs, deleteDoc, onSnapshot, query, orderBy };
@@ -89,6 +68,103 @@ html,body{min-height:100vh;background:var(--bg);color:var(--text);font-family:'R
 .orb1{width:350px;height:350px;background:rgba(124,92,191,0.06);top:-100px;left:-80px}
 .orb2{width:250px;height:250px;background:rgba(201,162,39,0.05);bottom:5%;right:3%;animation-duration:20s;animation-delay:-7s}
 @keyframes orb-float{from{transform:translate(0,0)}to{transform:translate(25px,35px)}}
+
+/* ═══ ONBOARDING SCREEN ═══ */
+#onboarding{position:fixed;inset:0;z-index:500;display:flex;align-items:center;justify-content:center;padding:20px}
+.ob-modal{background:linear-gradient(145deg,var(--bg2),var(--bg1));border:1px solid rgba(201,162,39,0.18);border-radius:20px;
+  padding:36px;width:480px;max-width:100%;max-height:90vh;overflow-y:auto;position:relative;
+  box-shadow:0 0 80px rgba(124,92,191,0.15),0 40px 80px rgba(0,0,0,0.7);}
+.ob-modal::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:50%;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(201,162,39,0.5),transparent)}
+.ob-header{display:flex;align-items:center;gap:14px;margin-bottom:28px}
+.ob-sigil{width:50px;height:50px;background:linear-gradient(135deg,rgba(201,162,39,0.2),rgba(124,92,191,0.2));
+  border:1px solid rgba(201,162,39,0.25);border-radius:12px;display:flex;align-items:center;justify-content:center;
+  font-family:'Noto Serif JP',serif;font-size:20px;color:var(--gold);text-shadow:0 0 20px rgba(201,162,39,0.8)}
+.ob-title{font-family:'Cinzel',serif;font-size:20px;font-weight:700;color:var(--gold);letter-spacing:0.1em}
+.ob-sub{font-size:10px;color:var(--muted2);letter-spacing:0.25em;text-transform:uppercase;margin-top:3px}
+
+/* Steps indicator */
+.step-indicator{display:flex;gap:6px;margin-bottom:28px}
+.step-dot{flex:1;height:3px;border-radius:2px;background:rgba(255,255,255,0.06);transition:background .3s}
+.step-dot.done{background:var(--gold)}
+.step-dot.active{background:linear-gradient(90deg,var(--gold),rgba(201,162,39,0.3))}
+
+/* Field label */
+.ob-label{font-size:11px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted2);margin-bottom:9px;display:block}
+
+/* Name input */
+.ob-input{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);
+  padding:11px 14px;color:var(--text);font-family:'Rajdhani',sans-serif;font-size:15px;outline:none;
+  transition:all .2s;margin-bottom:6px}
+.ob-input:focus{border-color:rgba(201,162,39,0.4);box-shadow:0 0 0 3px rgba(201,162,39,0.08)}
+.ob-input.error{border-color:rgba(239,68,68,0.5)}
+.ob-error{font-size:11px;color:var(--danger);margin-bottom:14px;min-height:16px;letter-spacing:0.03em}
+
+/* Group cards */
+.group-cards{display:flex;flex-direction:column;gap:9px;margin-bottom:20px}
+.gcard{padding:14px 16px;border-radius:10px;border:1px solid;cursor:pointer;transition:all .2s;
+  display:flex;align-items:center;gap:14px}
+.gcard-1{border-color:var(--g1border);color:var(--g1)}
+.gcard-2{border-color:var(--g2border);color:var(--g2)}
+.gcard-3{border-color:var(--g3border);color:var(--g3)}
+.gcard.sel.gcard-1{background:var(--g1b);box-shadow:0 0 16px rgba(255,107,107,0.15)}
+.gcard.sel.gcard-2{background:var(--g2b);box-shadow:0 0 16px rgba(96,165,250,0.15)}
+.gcard.sel.gcard-3{background:var(--g3b);box-shadow:0 0 16px rgba(167,139,250,0.15)}
+.gcard-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;background:currentColor}
+.gcard-info{flex:1}
+.gcard-name{font-size:14px;font-weight:700;letter-spacing:0.06em}
+.gcard-members{font-size:11px;opacity:0.5;margin-top:2px;font-weight:400}
+.gcard-check{width:20px;height:20px;border-radius:50%;border:1.5px solid currentColor;
+  display:flex;align-items:center;justify-content:center;font-size:11px;opacity:0;transition:opacity .2s;flex-shrink:0}
+.gcard.sel .gcard-check{opacity:1;background:currentColor;color:#000}
+
+/* Role pills */
+.ob-role-pills{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px}
+.ob-rpill{padding:7px 14px;border-radius:var(--radius-sm);border:1px solid var(--border2);color:var(--muted2);
+  font-size:12px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;transition:all .2s}
+.ob-rpill.sel{border-color:rgba(201,162,39,0.4);background:rgba(201,162,39,0.1);color:var(--gold2)}
+.ob-rpill:hover{border-color:var(--border3);color:var(--text)}
+
+/* Confirm page */
+.ob-avatar{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:20px;font-weight:700;margin:0 auto 24px;letter-spacing:0.05em;border:2px solid}
+.confirm-rows{margin-bottom:24px}
+.confirm-row{display:flex;justify-content:space-between;align-items:center;padding:11px 0;
+  border-bottom:1px solid var(--border)}
+.confirm-row:last-child{border:none}
+.ck{font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted2)}
+.cv{font-size:14px;font-weight:600}
+
+/* Buttons */
+.ob-btn{width:100%;padding:13px;background:linear-gradient(135deg,rgba(201,162,39,0.2),rgba(124,92,191,0.15));
+  border:1px solid rgba(201,162,39,0.4);border-radius:var(--radius-sm);color:var(--gold2);
+  font-family:'Cinzel',serif;font-size:13px;font-weight:600;letter-spacing:0.08em;cursor:pointer;transition:all .2s}
+.ob-btn:hover{background:linear-gradient(135deg,rgba(201,162,39,0.3),rgba(124,92,191,0.22));box-shadow:0 0 20px rgba(201,162,39,0.15)}
+.ob-back{text-align:center;margin-top:14px;font-size:12px;color:var(--muted2);cursor:pointer;
+  letter-spacing:0.05em;transition:color .2s}
+.ob-back:hover{color:var(--text2)}
+
+/* ═══ PROFILE BADGE (header) ═══ */
+.profile-badge{display:flex;align-items:center;gap:9px;padding:6px 12px 6px 8px;
+  background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius-sm);cursor:pointer;
+  transition:all .2s;position:relative}
+.profile-badge:hover{border-color:var(--border3);background:var(--bg3)}
+.pb-avatar{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;border:1.5px solid;flex-shrink:0}
+.pb-name{font-size:13px;font-weight:600;letter-spacing:0.04em}
+.pb-role{font-size:10px;color:var(--muted2);letter-spacing:0.06em}
+.pb-group-dot{width:7px;height:7px;border-radius:50%;margin-left:2px}
+
+/* Profile dropdown */
+.pb-dropdown{position:absolute;top:calc(100% + 8px);right:0;background:var(--bg3);border:1px solid var(--border2);
+  border-radius:var(--radius-sm);min-width:180px;overflow:hidden;z-index:50;
+  box-shadow:0 8px 24px rgba(0,0,0,0.4);display:none}
+.pb-dropdown.open{display:block}
+.pb-menu-item{padding:10px 14px;font-size:12px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;
+  color:var(--muted2);cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:8px}
+.pb-menu-item:hover{background:var(--bg4);color:var(--text)}
+.pb-menu-item.danger:hover{background:rgba(239,68,68,0.1);color:var(--danger)}
+.pb-menu-sep{height:1px;background:var(--border);margin:4px 0}
 
 /* ═══ LAYOUT ═══ */
 .app{position:relative;z-index:1;max-width:1400px;margin:0 auto;padding:0 20px 40px}
@@ -242,7 +318,6 @@ html,body{min-height:100vh;background:var(--bg);color:var(--text);font-family:'R
 .icon-btn:hover{border-color:var(--border3);color:var(--text)}
 .icon-btn.del:hover{border-color:rgba(239,68,68,0.4);background:rgba(239,68,68,0.1);color:var(--danger)}
 
-/* Groupe dot */
 .g-dot{width:10px;height:10px;border-radius:50%}
 
 /* ═══ VIEW TOGGLE ═══ */
@@ -295,6 +370,7 @@ html,body{min-height:100vh;background:var(--bg);color:var(--text);font-family:'R
 .member-list{display:flex;flex-direction:column;gap:6px}
 .member-item{display:flex;align-items:center;gap:10px;padding:8px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm)}
 .member-name{flex:1;font-size:13px;font-weight:600}
+.member-badge{font-size:9px;padding:2px 7px;border-radius:3px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase}
 .member-group-select{background:var(--bg4);border:1px solid var(--border2);border-radius:4px;padding:3px 6px;color:var(--text);font-size:12px;font-family:'Rajdhani',sans-serif}
 .btn-add-member{display:flex;align-items:center;gap:6px;padding:8px 14px;border:1px dashed var(--border2);border-radius:var(--radius-sm);
   background:transparent;color:var(--muted2);font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:600;
@@ -328,7 +404,31 @@ html,body{min-height:100vh;background:var(--bg);color:var(--text);font-family:'R
 
 <div id="toast-container" class="toast-container"></div>
 
-<div class="app">
+<!-- ══════════════════════════════════
+     ONBOARDING — CRÉATION DE PROFIL
+══════════════════════════════════ -->
+<div id="onboarding" style="display:none">
+  <div class="ob-modal">
+    <div class="ob-header">
+      <div class="ob-sigil">予</div>
+      <div>
+        <div class="ob-title">PLANNING</div>
+        <div class="ob-sub">Première connexion</div>
+      </div>
+    </div>
+    <div class="step-indicator">
+      <div class="step-dot" id="sd1"></div>
+      <div class="step-dot" id="sd2"></div>
+      <div class="step-dot" id="sd3"></div>
+    </div>
+    <div id="ob-step-content"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     APP PRINCIPALE
+══════════════════════════════════ -->
+<div class="app" id="main-app" style="display:none">
   <!-- HEADER -->
   <div class="header">
     <div class="header-left">
@@ -344,6 +444,20 @@ html,body{min-height:100vh;background:var(--bg);color:var(--text);font-family:'R
         <span id="db-label">Connexion...</span>
       </div>
       <button class="btn-config" onclick="openConfig()">⚙ Config</button>
+      <!-- PROFILE BADGE -->
+      <div class="profile-badge" id="profile-badge" onclick="toggleProfileMenu()">
+        <div class="pb-avatar" id="pb-avatar"></div>
+        <div>
+          <div class="pb-name" id="pb-name"></div>
+          <div class="pb-role" id="pb-role"></div>
+        </div>
+        <div class="pb-group-dot" id="pb-group-dot"></div>
+        <div class="pb-dropdown" id="pb-dropdown">
+          <div class="pb-menu-item" onclick="openEditProfile(event)">✎ Modifier mon profil</div>
+          <div class="pb-menu-sep"></div>
+          <div class="pb-menu-item danger" onclick="resetProfile(event)">⚑ Réinitialiser le profil</div>
+        </div>
+      </div>
       <button class="btn-add" onclick="openModal()">＋ Ajouter un créneau</button>
     </div>
   </div>
@@ -359,7 +473,6 @@ html,body{min-height:100vh;background:var(--bg);color:var(--text);font-family:'R
   <!-- TOOLBAR -->
   <div class="toolbar">
     <div class="toolbar-left">
-      <!-- SEMAINE NAV -->
       <div class="week-nav" style="gap:8px;margin:0">
         <button class="btn-nav" onclick="changeWeek(-1)">‹</button>
         <div class="week-label" style="min-width:180px">
@@ -464,7 +577,6 @@ html,body{min-height:100vh;background:var(--bg);color:var(--text);font-family:'R
     <button class="modal-close" onclick="closeConfig()">✕</button>
     <div class="modal-title" style="color:var(--purple2)">⚙ Configuration</div>
 
-    <!-- Noms des groupes -->
     <div class="config-section">
       <div class="config-section-title">Noms des groupes</div>
       <div class="form-row">
@@ -486,9 +598,8 @@ html,body{min-height:100vh;background:var(--bg);color:var(--text);font-family:'R
       </div>
     </div>
 
-    <!-- Membres -->
     <div class="config-section">
-      <div class="config-section-title">Membres</div>
+      <div class="config-section-title">Membres enregistrés</div>
       <div class="member-list" id="member-list"></div>
       <div style="display:flex;gap:8px;margin-top:8px">
         <input type="text" id="new-member-name" placeholder="Nom du membre..." style="flex:1;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:8px 10px;color:var(--text);font-family:'Rajdhani',sans-serif;font-size:13px;outline:none">
@@ -501,14 +612,9 @@ html,body{min-height:100vh;background:var(--bg);color:var(--text);font-family:'R
       </div>
     </div>
 
-    <!-- Firebase config -->
     <div class="config-section">
       <div class="config-section-title">🔥 Firebase</div>
-      <div class="field" style="margin:0">
-        <label>Project ID</label>
-        <input type="text" id="cfg-project" placeholder="Déjà configuré dans le code source">
-      </div>
-      <p style="font-size:11px;color:var(--muted2);margin-top:8px;letter-spacing:0.03em;line-height:1.6">
+      <p style="font-size:11px;color:var(--muted2);letter-spacing:0.03em;line-height:1.6">
         Pour changer la base Firebase, modifie la variable <code style="font-family:'Share Tech Mono';color:var(--gold2)">firebaseConfig</code> dans le code source HTML.
       </p>
     </div>
@@ -522,9 +628,269 @@ html,body{min-height:100vh;background:var(--bg);color:var(--text);font-family:'R
 
 <script type="module">
 // ═══════════════════════════════════════════════════════
+//  PROFIL UTILISATEUR
+// ═══════════════════════════════════════════════════════
+const PROFILE_KEY = 'planning-user-profile';
+
+function getProfile() {
+  try { return JSON.parse(localStorage.getItem(PROFILE_KEY) || 'null'); }
+  catch { return null; }
+}
+
+function saveProfile(p) {
+  localStorage.setItem(PROFILE_KEY, JSON.stringify(p));
+}
+
+// ═══════════════════════════════════════════════════════
+//  ONBOARDING
+// ═══════════════════════════════════════════════════════
+let ob = { step: 0, name: '', groupe: null, role: null };
+let obIsEdit = false;
+
+const gColorsMap = { 1:'var(--g1)', 2:'var(--g2)', 3:'var(--g3)' };
+
+function getGroupName(g) {
+  return config.groupNames[g] || 'Groupe ' + g;
+}
+
+function showOnboarding(editMode) {
+  obIsEdit = !!editMode;
+  ob = { step: 0, name: '', groupe: null, role: null };
+  if (editMode) {
+    const p = getProfile();
+    if (p) { ob.name = p.name || ''; ob.groupe = p.groupe || null; ob.role = p.role || null; }
+  }
+  document.getElementById('onboarding').style.display = 'flex';
+  document.getElementById('main-app').style.display = 'none';
+  renderObStep();
+}
+
+function hideOnboarding() {
+  document.getElementById('onboarding').style.display = 'none';
+  document.getElementById('main-app').style.display = 'block';
+}
+
+function updateObDots() {
+  for (let i = 0; i < 3; i++) {
+    const d = document.getElementById('sd' + (i + 1));
+    if (!d) return;
+    d.className = 'step-dot' + (i < ob.step ? ' done' : i === ob.step ? ' active' : '');
+  }
+}
+
+function renderObStep() {
+  updateObDots();
+  const el = document.getElementById('ob-step-content');
+
+  if (ob.step === 0) {
+    // Étape 1 — Nom
+    el.innerHTML = `
+      <label class="ob-label">Ton prénom ou pseudo</label>
+      <input class="ob-input" id="ob-ni" placeholder="ex: Sora, DarkMJ, Ryuji..." maxlength="30" value="${escHtml(ob.name)}">
+      <div class="ob-error" id="ob-err"></div>
+      <button class="ob-btn" onclick="obNext()">Continuer →</button>
+      ${obIsEdit ? '<div class="ob-back" onclick="cancelEditProfile()">← Annuler</div>' : ''}
+    `;
+    const ni = document.getElementById('ob-ni');
+    ni.focus();
+    ni.addEventListener('keydown', e => { if (e.key === 'Enter') obNext(); });
+
+  } else if (ob.step === 1) {
+    // Étape 2 — Groupe
+    const cards = [1, 2, 3].map(g => {
+      const col = gColorsMap[g];
+      const name = getGroupName(g);
+      const members = config.members.filter(m => String(m.groupe) === String(g));
+      const mLabel = members.length === 0 ? 'Aucun membre encore'
+        : members.length === 1 ? '1 membre' : members.length + ' membres';
+      const sel = String(ob.groupe) === String(g) ? ' sel' : '';
+      return `<div class="gcard gcard-${g}${sel}" onclick="obSelG(${g})" id="obgc${g}">
+        <span class="gcard-dot"></span>
+        <div class="gcard-info">
+          <div class="gcard-name">${escHtml(name)}</div>
+          <div class="gcard-members">${mLabel}</div>
+        </div>
+        <div class="gcard-check">✓</div>
+      </div>`;
+    }).join('');
+
+    el.innerHTML = `
+      <label class="ob-label">Ton groupe</label>
+      <div class="group-cards">${cards}</div>
+      <div class="ob-error" id="ob-err"></div>
+      <button class="ob-btn" onclick="obNext()">Continuer →</button>
+      <div class="ob-back" onclick="obBack()">← Retour</div>
+    `;
+
+  } else if (ob.step === 2) {
+    // Étape 3 — Rôle
+    const roles = ['MJ', 'Animateur', 'Co-MJ', 'Remplaçant'];
+    const pillsHtml = roles.map(r =>
+      `<div class="ob-rpill${ob.role === r ? ' sel' : ''}" onclick="obSelR('${r}')" data-r="${r}">${r}</div>`
+    ).join('');
+
+    el.innerHTML = `
+      <label class="ob-label">Ton rôle habituel</label>
+      <div class="ob-role-pills">${pillsHtml}</div>
+      <div class="ob-error" id="ob-err"></div>
+      <button class="ob-btn" onclick="obNext()">Continuer →</button>
+      <div class="ob-back" onclick="obBack()">← Retour</div>
+    `;
+
+  } else if (ob.step === 3) {
+    // Étape 4 — Confirmation
+    const gc = gColorsMap[ob.groupe] || 'var(--muted)';
+    const gName = getGroupName(ob.groupe);
+    const ini = ob.name.slice(0, 2).toUpperCase();
+
+    el.innerHTML = `
+      <div class="ob-avatar" style="background:${gc.replace('var(--g','rgba(').replace(')',',0.18)')};border-color:${gc};color:${gc}">${ini}</div>
+      <div class="confirm-rows">
+        <div class="confirm-row">
+          <span class="ck">Pseudo</span>
+          <span class="cv">${escHtml(ob.name)}</span>
+        </div>
+        <div class="confirm-row">
+          <span class="ck">Groupe</span>
+          <span class="cv" style="color:${gc}">${escHtml(gName)}</span>
+        </div>
+        <div class="confirm-row">
+          <span class="ck">Rôle</span>
+          <span class="cv">${escHtml(ob.role || 'Non précisé')}</span>
+        </div>
+      </div>
+      <button class="ob-btn" onclick="obFinish()">${obIsEdit ? '✓ Mettre à jour' : '✓ Créer mon profil'}</button>
+      <div class="ob-back" onclick="obBack()">← Modifier</div>
+    `;
+  }
+}
+
+window.obNext = () => {
+  const err = document.getElementById('ob-err');
+  if (ob.step === 0) {
+    const val = document.getElementById('ob-ni').value.trim();
+    if (!val) {
+      document.getElementById('ob-ni').classList.add('error');
+      if (err) err.textContent = 'Saisis un pseudo pour continuer.';
+      return;
+    }
+    ob.name = val;
+  } else if (ob.step === 1) {
+    if (!ob.groupe) {
+      if (err) err.textContent = 'Sélectionne un groupe.';
+      return;
+    }
+  }
+  ob.step++;
+  renderObStep();
+};
+
+window.obBack = () => { ob.step = Math.max(0, ob.step - 1); renderObStep(); };
+
+window.obSelG = (g) => {
+  ob.groupe = g;
+  [1, 2, 3].forEach(i => {
+    const el = document.getElementById('obgc' + i);
+    if (el) { el.classList.toggle('sel', i === g); }
+  });
+};
+
+window.obSelR = (r) => {
+  ob.role = r;
+  document.querySelectorAll('.ob-rpill').forEach(p => p.classList.toggle('sel', p.dataset.r === r));
+};
+
+window.obFinish = () => {
+  const profile = {
+    id: 'u_' + Date.now(),
+    name: ob.name,
+    groupe: ob.groupe,
+    role: ob.role || null,
+    createdAt: new Date().toISOString()
+  };
+  // Préserver l'id si on est en mode édition
+  if (obIsEdit) {
+    const existing = getProfile();
+    if (existing && existing.id) profile.id = existing.id;
+  }
+  saveProfile(profile);
+
+  // Ajouter automatiquement le membre dans la config s'il n'existe pas encore
+  if (!config.members.find(m => m.id === profile.id)) {
+    config.members.push({ id: profile.id, name: profile.name, groupe: profile.groupe });
+    localStorage.setItem('planning-config', JSON.stringify(config));
+  } else {
+    // Mettre à jour le membre existant
+    const idx = config.members.findIndex(m => m.id === profile.id);
+    if (idx >= 0) {
+      config.members[idx] = { id: profile.id, name: profile.name, groupe: profile.groupe };
+      localStorage.setItem('planning-config', JSON.stringify(config));
+    }
+  }
+
+  hideOnboarding();
+  renderProfileBadge();
+  render();
+  toast(obIsEdit ? 'Profil mis à jour !' : 'Bienvenue, ' + profile.name + ' !', 'ok');
+};
+
+window.cancelEditProfile = () => {
+  hideOnboarding();
+};
+
+// ═══════════════════════════════════════════════════════
+//  PROFILE BADGE
+// ═══════════════════════════════════════════════════════
+function renderProfileBadge() {
+  const p = getProfile();
+  if (!p) return;
+  const gc = gColorsMap[p.groupe] || 'var(--muted)';
+  const gName = getGroupName(p.groupe);
+  const ini = p.name.slice(0, 2).toUpperCase();
+
+  const av = document.getElementById('pb-avatar');
+  av.textContent = ini;
+  av.style.background = gc.replace('var(--g', 'rgba(').replace(')', ',0.2)');
+  av.style.borderColor = gc;
+  av.style.color = gc;
+
+  document.getElementById('pb-name').textContent = p.name;
+  document.getElementById('pb-role').textContent = (p.role || '') + ' · ' + gName;
+
+  const dot = document.getElementById('pb-group-dot');
+  dot.style.background = gc;
+}
+
+window.toggleProfileMenu = () => {
+  document.getElementById('pb-dropdown').classList.toggle('open');
+};
+
+// Fermer le dropdown si clic ailleurs
+document.addEventListener('click', (e) => {
+  const badge = document.getElementById('profile-badge');
+  if (badge && !badge.contains(e.target)) {
+    document.getElementById('pb-dropdown').classList.remove('open');
+  }
+});
+
+window.openEditProfile = (e) => {
+  e.stopPropagation();
+  document.getElementById('pb-dropdown').classList.remove('open');
+  showOnboarding(true);
+};
+
+window.resetProfile = (e) => {
+  e.stopPropagation();
+  document.getElementById('pb-dropdown').classList.remove('open');
+  if (!confirm('Réinitialiser ton profil ? Tu devras le recréer.')) return;
+  localStorage.removeItem(PROFILE_KEY);
+  showOnboarding(false);
+};
+
+// ═══════════════════════════════════════════════════════
 //  ÉTAT GLOBAL
 // ═══════════════════════════════════════════════════════
-let slots = [];          // données depuis Firebase
+let slots = [];
 let currentWeek = startOfWeek(new Date());
 let activeGroupe = 'all';
 let currentView = 'calendar';
@@ -535,18 +901,14 @@ let unsubscribe = null;
 
 let config = JSON.parse(localStorage.getItem('planning-config') || '{}');
 config.groupNames = config.groupNames || { 1:'Groupe 1', 2:'Groupe 2', 3:'Groupe 3' };
-config.members = config.members || [
-  {id:'m1', name:'MJ Alpha', groupe:1},
-  {id:'m2', name:'MJ Bêta', groupe:2},
-  {id:'m3', name:'Animateur Gamma', groupe:3}
-];
+config.members = config.members || [];
 
 // ═══════════════════════════════════════════════════════
 //  UTILS DATE
 // ═══════════════════════════════════════════════════════
 function startOfWeek(d) {
   const day = new Date(d);
-  const diff = (day.getDay() + 6) % 7; // Lundi = 0
+  const diff = (day.getDay() + 6) % 7;
   day.setDate(day.getDate() - diff);
   day.setHours(0,0,0,0);
   return day;
@@ -558,20 +920,13 @@ function addDays(d, n) {
   return r;
 }
 
-function fmt(d) {
-  return d.toISOString().split('T')[0];
-}
+function fmt(d) { return d.toISOString().split('T')[0]; }
+function fmtDisplay(d) { return d.toLocaleDateString('fr-FR', {day:'2-digit', month:'short'}); }
+function fmtFull(d) { return d.toLocaleDateString('fr-FR', {weekday:'short', day:'2-digit', month:'long'}); }
+function isToday(d) { return fmt(d) === fmt(new Date()); }
 
-function fmtDisplay(d) {
-  return d.toLocaleDateString('fr-FR', {day:'2-digit', month:'short'});
-}
-
-function fmtFull(d) {
-  return d.toLocaleDateString('fr-FR', {weekday:'short', day:'2-digit', month:'long'});
-}
-
-function isToday(d) {
-  return fmt(d) === fmt(new Date());
+function escHtml(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
 // ═══════════════════════════════════════════════════════
@@ -596,6 +951,7 @@ function initFirebase() {
 function setDbStatus(ok) {
   const dot = document.getElementById('db-dot');
   const lbl = document.getElementById('db-label');
+  if (!dot) return;
   dot.className = 'db-dot ' + (ok ? 'ok' : 'err');
   lbl.textContent = ok ? 'Firebase connecté' : 'Erreur Firebase';
 }
@@ -613,15 +969,14 @@ function render() {
 
 function applyGroupNames() {
   const g = config.groupNames;
-  document.getElementById('name-g1').textContent = g[1];
-  document.getElementById('name-g2').textContent = g[2];
-  document.getElementById('name-g3').textContent = g[3];
-  document.getElementById('lbl-g1').textContent = g[1];
-  document.getElementById('lbl-g2').textContent = g[2];
-  document.getElementById('lbl-g3').textContent = g[3];
-  document.getElementById('gp1').textContent = g[1];
-  document.getElementById('gp2').textContent = g[2];
-  document.getElementById('gp3').textContent = g[3];
+  ['name-g1','name-g2','name-g3','lbl-g1','lbl-g2','lbl-g3'].forEach((id, i) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = g[Math.floor(i % 3) + 1];
+  });
+  [1,2,3].forEach(i => {
+    const el = document.getElementById('gp'+i);
+    if (el) el.textContent = g[i];
+  });
 }
 
 function filteredSlots() {
@@ -636,15 +991,13 @@ function weekSlots() {
 }
 
 function updateStats() {
-  const all = slots;
-  document.getElementById('s-total').textContent = all.length;
-  document.getElementById('s-g1').textContent = all.filter(s => String(s.groupe)==='1').length;
-  document.getElementById('s-g2').textContent = all.filter(s => String(s.groupe)==='2').length;
-  document.getElementById('s-g3').textContent = all.filter(s => String(s.groupe)==='3').length;
+  document.getElementById('s-total').textContent = slots.length;
+  document.getElementById('s-g1').textContent = slots.filter(s => String(s.groupe)==='1').length;
+  document.getElementById('s-g2').textContent = slots.filter(s => String(s.groupe)==='2').length;
+  document.getElementById('s-g3').textContent = slots.filter(s => String(s.groupe)==='3').length;
 }
 
 function updateCounts() {
-  const fs = filteredSlots();
   document.getElementById('cnt-all').textContent = '(' + slots.length + ')';
   document.getElementById('cnt-g1').textContent = '(' + slots.filter(s=>String(s.groupe)==='1').length + ')';
   document.getElementById('cnt-g2').textContent = '(' + slots.filter(s=>String(s.groupe)==='2').length + ')';
@@ -655,13 +1008,12 @@ function updateCounts() {
 //  VUE CALENDRIER
 // ═══════════════════════════════════════════════════════
 function renderCalendar() {
-  // Semaine range label
   const start = currentWeek;
   const end = addDays(currentWeek, 6);
   const y = start.getFullYear();
   const wNum = getWeekNumber(start);
-  document.querySelector('.week-label').innerHTML =
-    `${fmtDisplay(start)} — ${fmtDisplay(end)} <span>Semaine ${wNum} · ${y}</span>`;
+  const wl = document.querySelector('.week-label');
+  if (wl) wl.innerHTML = `${fmtDisplay(start)} — ${fmtDisplay(end)} <span>Semaine ${wNum} · ${y}</span>`;
 
   const ws = weekSlots();
   const byDate = {};
@@ -673,8 +1025,7 @@ function renderCalendar() {
   const days = ['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'];
   let html = '';
   days.forEach((d,i) => {
-    const weekend = i >= 5;
-    html += `<div class="cal-header${weekend?' weekend':''}">${d}</div>`;
+    html += `<div class="cal-header${i>=5?' weekend':''}">${d}</div>`;
   });
 
   for (let i = 0; i < 7; i++) {
@@ -692,11 +1043,10 @@ function renderCalendar() {
       </div>`;
 
     daySlots.forEach(s => {
-      const gc = 'slot-g' + s.groupe;
-      html += `<div class="slot ${gc}" onclick="editSlotClick(event,'${s.id}')">
-        <span class="slot-time">${s.heure}</span>
-        <span class="slot-name">${s.userName||'?'}</span>
-        <span class="slot-role">${s.role||''}</span>
+      html += `<div class="slot slot-g${s.groupe}" onclick="editSlotClick(event,'${s.id}')">
+        <span class="slot-time">${escHtml(s.heure)}</span>
+        <span class="slot-name">${escHtml(s.userName||'?')}</span>
+        <span class="slot-role">${escHtml(s.role||'')}</span>
       </div>`;
     });
 
@@ -713,8 +1063,8 @@ function renderList() {
   const start = currentWeek;
   const end = addDays(currentWeek, 6);
   const wNum = getWeekNumber(start);
-  document.querySelector('.week-label').innerHTML =
-    `${fmtDisplay(start)} — ${fmtDisplay(end)} <span>Semaine ${wNum} · ${start.getFullYear()}</span>`;
+  const wl = document.querySelector('.week-label');
+  if (wl) wl.innerHTML = `${fmtDisplay(start)} — ${fmtDisplay(end)} <span>Semaine ${wNum} · ${start.getFullYear()}</span>`;
 
   const ws = weekSlots().sort((a,b) => (a.date+a.heure) > (b.date+b.heure) ? 1 : -1);
 
@@ -738,16 +1088,16 @@ function renderList() {
     const gColor = ['','var(--g1)','var(--g2)','var(--g3)'][s.groupe] || 'var(--muted)';
     const gName = config.groupNames[s.groupe] || 'Groupe ' + s.groupe;
     html += `<div class="list-item" onclick="editSlotId('${s.id}')">
-      <div class="list-item-time">${s.heure}</div>
+      <div class="list-item-time">${escHtml(s.heure)}</div>
       <div>
-        <div class="list-item-name">${s.userName||'?'}</div>
-        <div class="list-item-role">${s.role||''} ${s.note ? '— '+s.note : ''}</div>
+        <div class="list-item-name">${escHtml(s.userName||'?')}</div>
+        <div class="list-item-role">${escHtml(s.role||'')} ${s.note ? '— '+escHtml(s.note) : ''}</div>
       </div>
       <div class="list-item-groupe">
         <span class="g-dot" style="background:${gColor}"></span>
-        <span style="color:${gColor}">${gName}</span>
+        <span style="color:${gColor}">${escHtml(gName)}</span>
       </div>
-      <div class="list-item-note">${s.note||''}</div>
+      <div class="list-item-note">${escHtml(s.note||'')}</div>
       <div class="list-item-actions" onclick="event.stopPropagation()">
         <div class="icon-btn" onclick="editSlotId('${s.id}')">✎</div>
         <div class="icon-btn del" onclick="deleteSlotId('${s.id}')">✕</div>
@@ -802,33 +1152,38 @@ async function _deleteSlot(id) {
 }
 
 // ═══════════════════════════════════════════════════════
-//  MODAL
+//  MODAL CRÉNEAU
 // ═══════════════════════════════════════════════════════
 window.openModal = (date, slot) => {
   editId = slot ? slot.id : null;
   selGroupe_ = slot ? slot.groupe : null;
   selRole_ = slot ? slot.role : null;
 
+  // Pré-remplir avec le profil actuel si nouveau créneau
+  if (!slot) {
+    const p = getProfile();
+    if (p) {
+      selGroupe_ = p.groupe;
+      selRole_ = p.role;
+    }
+  }
+
   document.getElementById('modal-title').textContent = slot ? '✎ Modifier le créneau' : '＋ Nouveau créneau';
   document.getElementById('btn-del').style.display = slot ? 'block' : 'none';
 
-  // Pré-remplir date
   const today = fmt(new Date());
   document.getElementById('f-date').value = date || today;
   document.getElementById('f-heure').value = slot ? slot.heure : '20:00';
   document.getElementById('f-note').value = slot ? (slot.note||'') : '';
 
-  // User select
-  populateUserSelect(slot ? slot.userId : null);
+  populateUserSelect(slot ? slot.userId : (getProfile() ? getProfile().id : null));
 
-  // Groupe pills
   [1,2,3].forEach(g => {
-    document.getElementById('gp'+g).classList.toggle('sel', slot ? String(slot.groupe)===String(g) : false);
+    document.getElementById('gp'+g).classList.toggle('sel', String(selGroupe_) === String(g));
   });
 
-  // Role pills
   document.querySelectorAll('.rpill').forEach(el => {
-    el.classList.toggle('sel', slot ? el.dataset.r === slot.role : false);
+    el.classList.toggle('sel', el.dataset.r === selRole_);
   });
 
   document.getElementById('overlay').classList.add('open');
@@ -918,14 +1273,18 @@ window.closeConfigOutside = (e) => { if (e.target.id==='config-overlay') closeCo
 
 function renderMemberList() {
   const el = document.getElementById('member-list');
-  el.innerHTML = config.members.map((m,i) => `
-    <div class="member-item">
-      <span class="member-name">${m.name}</span>
+  const profile = getProfile();
+  el.innerHTML = config.members.map((m, i) => {
+    const isMe = profile && m.id === profile.id;
+    const gc = ['','var(--g1)','var(--g2)','var(--g3)'][m.groupe] || 'var(--muted)';
+    return `<div class="member-item">
+      <span class="member-name">${escHtml(m.name)} ${isMe ? '<span style="font-size:9px;background:rgba(201,162,39,0.15);color:var(--gold2);padding:1px 6px;border-radius:3px;font-weight:700;letter-spacing:0.06em">MOI</span>' : ''}</span>
       <select class="member-group-select" onchange="changeMemberGroup(${i},this.value)">
         ${[1,2,3].map(g=>`<option value="${g}"${String(m.groupe)===String(g)?' selected':''}>${config.groupNames[g]||'G'+g}</option>`).join('')}
       </select>
-      <div class="icon-btn del" onclick="removeMember(${i})">✕</div>
-    </div>`).join('');
+      ${!isMe ? `<div class="icon-btn del" onclick="removeMember(${i})">✕</div>` : '<div style="width:28px"></div>'}
+    </div>`;
+  }).join('');
 }
 
 window.changeMemberGroup = (i, g) => { config.members[i].groupe = parseInt(g); renderMemberList(); };
@@ -974,7 +1333,17 @@ function getWeekNumber(d) {
 //  INIT
 // ═══════════════════════════════════════════════════════
 function init() {
-  render(); // rendu initial (vide)
+  const profile = getProfile();
+  if (!profile) {
+    // Première connexion → onboarding
+    showOnboarding(false);
+  } else {
+    // Profil existant → app directe
+    hideOnboarding();
+    renderProfileBadge();
+    render();
+  }
+
   if (window._firebaseReady) {
     initFirebase();
   } else {
